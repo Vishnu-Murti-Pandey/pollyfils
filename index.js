@@ -1,4 +1,7 @@
-// step 1 - check if map is there or not// step 2 - create a empty temp array, iterate over the array provided// step 3 - push the callback function inside the temp array
+// step 1 - check if map is there or not
+// step 2 - create a empty temp array, iterate over the array provided
+// step 3 - push the callback function inside the temp array
+
 // arr.map(() => {});
 Array.prototype.myMap = function (cb) {
   if (typeof cb !== "function") {
