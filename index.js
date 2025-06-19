@@ -15,7 +15,7 @@ Array.prototype.myMap = function (cb) {
 };
 let mapArray = [1, 2, 3, 4, 5, 6];
 let newMapArray = mapArray.myMap((num) => num * 2);
-console.log(newMapArray);
+// console.log(newMapArray);
 
 // arr.filter((num) => num > 2);
 Array.prototype.myFilter = function (cb) {
@@ -32,7 +32,7 @@ Array.prototype.myFilter = function (cb) {
 };
 let filterArray = [1, 2, 3, 4, 5, 6];
 let newFilterArray = filterArray.myFilter((num) => num > 2);
-console.log(newFilterArray);
+// console.log(newFilterArray);
 
 // arr.reduce((acc, curr, i, arr) => acc+curr, 0);
 Array.prototype.myReduce = function (cb, initialValue) {
@@ -48,7 +48,7 @@ Array.prototype.myReduce = function (cb, initialValue) {
 };
 let reduceArray = [1, 2, 3, 4, 5, 6];
 let newReduceArray = reduceArray.myReduce((acc, curr) => acc + curr, 0);
-console.log(newReduceArray);
+// console.log(newReduceArray);
 
 // printName.call(myName, "Hello");
 function printName(greetings) {
@@ -106,7 +106,8 @@ function once(fn) {
   };
 }
 // Example usageconst sayHello = once((name1, name2) => console.log(`Hello! ${name1} and ${name2}`));
-sayHello("Jack", "Oggy"); // Prints: "Hello!"sayHello("Bob"); // Does nothingsayHello("Oggy"); // Does nothing
+// sayHello("Jack", "Oggy");
+ // Prints: "Hello!"sayHello("Bob"); // Does nothingsayHello("Oggy"); // Does nothing
 
 
 
@@ -225,7 +226,7 @@ Array.prototype.myForEach = function (cb) {
   }
 };
 let arr5 = [1, 2, 3, 4, 5, 6]; 
-arr5.myForEach((num, idx) => console.log(`The data is ${num} and index is ${idx}`));
+// arr5.myForEach((num, idx) => console.log(`The data is ${num} and index is ${idx}`));
 
 
 // polyfill for at()
@@ -254,4 +255,69 @@ Array.prototype.myEvery = function (cb) {
 };
 let arr7 = [0, 2, 4, 6];
 let value6 = arr7.myEvery((num) => num % 2 === 0);
-console.log(value6);
+// console.log(value6);
+
+
+// polyfill for promise
+
+function MyPromise(executor) {
+  let onResolve;
+  let onReject;
+  let isFulfilled = false;
+  let isRejected = false;
+  let isCalled = false;
+  let value;
+
+  function resolve(val) {
+    isFulfilled = true; // Set to true, once the promise is resolved
+    value = val; //Resolved value is now assigned
+    // For asynchronous executor function only
+    // Callback value is assigned to onResolve only when promise is not yet resolved
+    if (typeof onResolve === "function") { 
+      onResolve(val);
+      isCalled = true; // Set to true when the function is called
+    }
+  }
+  function reject(val) {
+    isRejected = true; // Set to true, once the promise is resolved
+    value = val; //Rejected value is now assigned
+    // For asynchronous executor function only
+    // Callback value is assigned to onReject only when promise is not yet rejected
+    if (typeof onReject === "function") {
+      onReject(val);
+      isCalled = true; // Set to true when the function is called
+    }
+  }
+  this.then = function (callback) {
+    onResolve = callback;
+    // Only for synchronous executor operation
+    if (isFulfilled && !isCalled) {
+      isCalled = true;
+      onResolve(value);
+    }
+    return this;
+  };
+  this.catch = function (callback) {
+    onReject = callback;
+    // Only for synchronous executor operation
+    if (isRejected && !isCalled) {
+      isCalled = true;
+      onReject(value);
+    }
+    return this;
+  };
+  try {
+    executor(resolve, reject);
+  } catch (err) {
+    reject(err);
+  }
+}
+
+new MyPromise((resolve, reject) => {
+  setTimeout(() =>  {
+    resolve("Done!");
+  }, 3000);
+})
+.then(val => console.log("Resolved with:", val))
+.catch(err => console.error("Error:", err));
+
